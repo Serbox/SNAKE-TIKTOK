@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake TikTok AFK</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+ 
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+
+    <div id="stream-container">
+        <div id="alert-container"></div>
+
+        
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+    </div>
+
+    <!-- Scripts del juego (Estructura modular) -->
+    <script src="src/game/board.js"></script>
+    <script src="src/game/sound.js"></script> <script src="src/game/snake.js"></script>
+    <script src="src/game/ai.js"></script>
+    <script src="src/network/socket.js"></script>
+    
+    <script src="src/main.js"></script>
+</body>
+</html>
