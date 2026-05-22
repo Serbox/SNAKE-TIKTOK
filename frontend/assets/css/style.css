@@ -15,25 +15,391 @@ body {
     overflow: hidden;
 }
 
+/* ── Pantalla de configuración ────────────────────────────────── */
+#config-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.config-box {
+    background-color: #1a1a1e;
+    border: 2px solid #2a2a2e;
+    border-radius: 16px;
+    padding: 40px 48px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    max-width: 480px;
+    width: 90%;
+}
+
+.config-box h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+}
+
+.grid-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.grid-btn {
+    background-color: #2a2a2e;
+    border: 2px solid #3a3a3e;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 20px;
+    text-align: left;
+    transition: border-color 0.15s, background-color 0.15s;
+}
+
+.grid-btn:hover {
+    border-color: #00b35f;
+    background-color: #1e2e26;
+}
+
+.grid-btn.active {
+    border-color: #00ff2a;
+    background-color: #0d2018;
+}
+
+.grid-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.grid-desc {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 2px;
+}
+
+.grid-btn.active .grid-desc {
+    color: #00b35f;
+}
+
+/* ── Inputs de configuración ──────────────────────────────────── */
+.config-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #2a2a2e;
+    border: 1px solid #3a3a3e;
+    border-radius: 10px;
+    padding: 12px 16px;
+    gap: 12px;
+}
+
+.config-row label {
+    font-size: 0.92rem;
+    color: #ccc;
+    text-align: left;
+    flex: 1;
+}
+
+.config-row .hint {
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.config-row input[type="number"] {
+    background-color: #1a1a1e;
+    border: 1.5px solid #3a3a3e;
+    border-radius: 7px;
+    color: #00ff2a;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 6px 10px;
+    text-align: center;
+    width: 72px;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+}
+
+.config-row input[type="number"]::-webkit-outer-spin-button,
+.config-row input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.config-row input[type="number"]:focus {
+    border-color: #00ff2a;
+}
+
+/* ── Botón inicio ─────────────────────────────────────────────── */
+#start-btn {
+    background-color: #00ff2a;
+    border: none;
+    border-radius: 10px;
+    color: #0a1a0a;
+    cursor: pointer;
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding: 14px 48px;
+    transition: background-color 0.15s, transform 0.1s;
+    width: 100%;
+    letter-spacing: 0.5px;
+}
+
+#start-btn:hover {
+    background-color: #00e024;
+    transform: translateY(-1px);
+}
+
+#start-btn:active {
+    transform: translateY(0);
+}
+
+/* ── Wrapper juego + leyenda de regalos ──────────────────────── */
+#game-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+/* ── Contenedor del juego ─────────────────────────────────────── */
 #stream-container {
     position: relative;
     border: 4px solid #1f1f23;
     border-radius: 12px;
     box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
     background-color: #1a1a1e;
+    overflow: hidden;
 }
 
 canvas {
     display: block;
     background-color: #0c0c0e;
-    border-radius: 8px;
+    border-radius: 0 0 8px 8px;
 }
 
+/* ── Marcador ─────────────────────────────────────────────────── */
+#score-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px 8px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #1a1a1e;
+    border-radius: 8px 8px 0 0;
+    user-select: none;
+}
+
+.score-icon {
+    font-size: 1.2rem;
+}
+
+#score-value,
+#wins-value {
+    color: #00ff2a;
+    min-width: 24px;
+    text-align: center;
+}
+
+#score-target,
+#wins-goal {
+    color: #555;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.score-sep {
+    color: #333;
+    font-size: 1.1rem;
+    margin: 0 4px;
+}
+
+/* ── Alertas ──────────────────────────────────────────────────── */
 #alert-container {
     position: absolute;
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90%;
+    width: 92%;
     z-index: 10;
-    pointer-events: none; }
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.game-alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(18, 18, 20, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    color: #ffffff;
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.game-alert.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.alert-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.alert-text strong {
+    color: #00ff2a;
+}
+
+/* ── Panel lateral de regalos ─────────────────────────────────── */
+#gift-legend {
+    background-color: #16161a;
+    border: 2px solid #1f1f23;
+    border-radius: 12px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    width: 190px;
+    flex-shrink: 0;
+    overflow: hidden;
+    align-self: stretch;   /* misma altura que el juego */
+}
+
+.legend-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px 9px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #1a1a1e;
+    border-bottom: 1px solid #252529;
+    letter-spacing: 0.3px;
+}
+
+#legend-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 0;
+}
+
+#legend-items::-webkit-scrollbar { width: 4px; }
+#legend-items::-webkit-scrollbar-track { background: transparent; }
+#legend-items::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+.legend-empty {
+    color: #444;
+    font-size: 0.78rem;
+    text-align: center;
+    padding: 20px 12px;
+    line-height: 1.6;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 13px;
+    border-bottom: 1px solid #1a1a1e;
+    transition: background 0.1s;
+}
+
+.legend-item:last-child {
+    border-bottom: none;
+}
+
+.legend-item:hover {
+    background: #1c1c22;
+}
+
+.legend-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.legend-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.legend-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.legend-desc {
+    font-size: 0.73rem;
+    line-height: 1.3;
+}
+
+/* ── Comandos de chat (footer) ────────────────────────────────── */
+.legend-footer {
+    border-top: 1px solid #252529;
+    padding: 8px 10px;
+    background-color: #1a1a1e;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.legend-cmd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.cmd-key {
+    background: #252529;
+    border-radius: 5px;
+    color: #00ff2a;
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+}
+
+.cmd-desc {
+    color: #888;
+    font-size: 0.73rem;
+}

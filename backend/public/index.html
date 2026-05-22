@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐍 Snake TikTok — Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0e0e10;color:#e0e0e0;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:0 0 60px}
+a{color:#00ff2a}
+
+/* Header */
+header{background:#16161a;border-bottom:2px solid #1f1f25;padding:18px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+header h1{font-size:1.3rem;font-weight:700;flex:1}
+#status-dot{width:10px;height:10px;border-radius:50%;background:#555;flex-shrink:0;transition:background .3s}
+#status-dot.on{background:#00ff2a;box-shadow:0 0 8px #00ff2a88}
+#status-text{font-size:.85rem;color:#888}
+
+/* Layout */
+.container{max-width:860px;margin:0 auto;padding:28px 20px;display:flex;flex-direction:column;gap:20px}
+
+/* Cards */
+.card{background:#16161a;border:1px solid #252529;border-radius:12px;padding:22px 24px}
+.card h2{font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:#fff}
+.card h2 .badge{background:#252529;border-radius:20px;padding:2px 10px;font-size:.72rem;color:#888;font-weight:500}
+
+/* Form rows */
+.field{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{width:180px;font-size:.88rem;color:#aaa;flex-shrink:0}
+.field input[type=text],.field input[type=number]{background:#0e0e10;border:1.5px solid #2a2a30;border-radius:7px;color:#fff;font-size:.92rem;padding:7px 10px;outline:none;transition:border-color .15s}
+.field input[type=text]{flex:1}
+.field input[type=number]{width:90px}
+.field input:focus{border-color:#00ff2a}
+
+/* Toggle */
+.toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:.88rem;color:#ccc;margin-bottom:10px}
+.toggle input{display:none}
+.toggle .knob{width:36px;height:20px;background:#333;border-radius:10px;position:relative;transition:background .2s;flex-shrink:0}
+.toggle .knob::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s}
+.toggle input:checked + .knob{background:#00b35f}
+.toggle input:checked + .knob::after{left:19px}
+
+/* Buttons */
+.btn{border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600;padding:8px 16px;font-size:.88rem;transition:opacity .15s,transform .1s}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.97)}
+.btn-green{background:#00ff2a;color:#0a1a0a}
+.btn-dark{background:#252529;color:#ccc}
+.btn-red{background:#e03030;color:#fff}
+.btn-sm{padding:5px 10px;font-size:.78rem}
+
+/* Gifts table */
+.tbl-wrap{overflow-x:auto;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead th{text-align:left;padding:8px 10px;color:#888;border-bottom:1px solid #252529;white-space:nowrap}
+tbody tr{border-bottom:1px solid #1a1a1e;transition:background .1s}
+tbody tr:hover{background:#1c1c22}
+tbody td{padding:9px 10px;vertical-align:middle}
+.tag-effect{display:inline-block;background:#1e2e22;color:#00c845;border-radius:5px;padding:2px 8px;font-size:.78rem;white-space:nowrap}
+.tag-params{color:#aaa;font-size:.78rem}
+.match-text{color:#888;font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-actions{white-space:nowrap;text-align:right}
+.td-actions .btn{margin-left:4px}
+
+/* Add button */
+#btn-add{margin-top:14px}
+
+/* Save bar */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#16161a;border-top:1px solid #252529;padding:12px 32px;display:flex;align-items:center;gap:14px;z-index:200}
+#save-msg{font-size:.85rem;color:#888;transition:color .3s}
+#save-msg.ok{color:#00ff2a}
+#save-msg.err{color:#e05050}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#16161a;border:1.5px solid #2a2a30;border-radius:14px;padding:28px 28px 22px;width:520px;max-width:95vw;max-height:92vh;overflow-y:auto}
+.modal h3{font-size:1.05rem;font-weight:700;margin-bottom:20px}
+.mfield{margin-bottom:14px}
+.mfield label{display:block;font-size:.82rem;color:#999;margin-bottom:5px}
+.mfield input,.mfield select,.mfield textarea{width:100%;background:#0e0e10;border:1.5px solid #2a2a30;border-radius:7px;color:#fff;font-size:.9rem;padding:8px 11px;outline:none;font-family:inherit;transition:border-color .15s}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:#00ff2a}
+.mfield textarea{resize:vertical;min-height:60px}
+.mfield select option{background:#1a1a1e}
+.param-row{display:flex;gap:12px}
+.param-row .mfield{flex:1}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.hint{font-size:.76rem;color:#666;margin-top:4px}
+
+/* Effect icon preview */
+.icon-preview{font-size:1.6rem;text-align:center;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<header>
+    <div id="status-dot"></div>
+    <h1>🐍 Snake TikTok AFK</h1>
+    <span id="status-text">Sin conexión</span>
+</header>
+
+<div class="container">
+
+    <!-- ── Conexión TikTok ─────────────────────────────────── -->
+    <div class="card">
+        <h2>🔗 Conexión TikTok</h2>
+        <div class="field">
+            <label>Usuario (sin @)</label>
+            <input type="text" id="cfg-username" placeholder="s3rboxx">
+            <button class="btn btn-green" onclick="reconnect()">Reconectar</button>
+        </div>
+    </div>
+
+    <!-- ── Eventos automáticos ────────────────────────────── -->
+    <div class="card">
+        <h2>📣 Eventos <span class="badge">likes · seguidores · chat</span></h2>
+
+        <label class="toggle">
+            <input type="checkbox" id="evt-follower">
+            <span class="knob"></span>
+            Nuevo seguidor → alerta en pantalla
+        </label>
+
+        <div class="field">
+            <label>Acumular N likes antes de notificar</label>
+            <input type="number" id="evt-like-threshold" min="1" max="9999" value="50">
+        </div>
+        <label class="toggle" style="margin-bottom:14px">
+            <input type="checkbox" id="evt-like-enabled">
+            <span class="knob"></span>
+            Mostrar alerta de likes
+        </label>
+
+        <label class="toggle">
+            <input type="checkbox" id="evt-chat-speed">
+            <span class="knob"></span>
+            Comandos <strong>&nbsp;!rapido&nbsp;</strong> / <strong>&nbsp;!lento&nbsp;</strong> en el chat
+        </label>
+        <label class="toggle">
+            <input type="checkbox" id="evt-food-emojis">
+            <span class="knob"></span>
+            Emojis de comida 🍕🌮🍔 en el chat → manzana dorada
+        </label>
+    </div>
+
+    <!-- ── Narrador ──────────────────────────────────────────── -->
+    <div class="card">
+        <h2>🔊 Narrador de comentarios</h2>
+
+        <label class="toggle" style="margin-bottom:16px">
+            <input type="checkbox" id="nar-enabled">
+            <span class="knob"></span>
+            Leer comentarios del chat en voz alta
+        </label>
+
+        <div class="field">
+            <label>Volumen</label>
+            <input type="range" id="nar-volume" min="0" max="100" value="80"
+                   oninput="document.getElementById('nar-vol-lbl').textContent=this.value+'%'">
+            <span id="nar-vol-lbl" style="width:40px;text-align:right;color:#00ff2a;font-weight:700">80%</span>
+        </div>
+
+        <div class="field">
+            <label>Velocidad</label>
+            <input type="range" id="nar-rate" min="60" max="200" value="110"
+                   oninput="document.getElementById('nar-rate-lbl').textContent=(this.value/100).toFixed(1)+'×'">
+            <span id="nar-rate-lbl" style="width:40px;text-align:right;color:#00ff2a;font-weight:700">1.1×</span>
+        </div>
+
+        <div class="field">
+            <label>Idioma / voz</label>
+            <select id="nar-lang" style="flex:1;background:#0e0e10;border:1.5px solid #2a2a30;border-radius:7px;color:#fff;padding:7px 10px;font-family:inherit;font-size:.9rem;outline:none">
+                <option value="es">Español</option>
+                <option value="es-AR">Español (Argentina)</option>
+                <option value="es-MX">Español (México)</option>
+                <option value="es-ES">Español (España)</option>
+                <option value="en-US">English (US)</option>
+                <option value="pt-BR">Português (Brasil)</option>
+            </select>
+        </div>
+
+        <button class="btn btn-dark" style="margin-top:4px" onclick="testNarrator()">🔊 Probar voz</button>
+    </div>
+
+    <!-- ── Regalos ─────────────────────────────────────────── -->
+    <div class="card">
+        <h2>🎁 Regalos <span class="badge" id="gifts-count">0 regalos</span></h2>
+
+        <div class="tbl-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Icono</th>
+                        <th>Nombre</th>
+                        <th>Palabras clave</th>
+                        <th>Efecto</th>
+                        <th>Cooldown</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="gifts-body"></tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-dark" id="btn-add" onclick="openModal(null)">＋ Agregar regalo</button>
+    </div>
+
+</div>
+
+<!-- ── Barra de guardado ──────────────────────────────────── -->
+<div class="save-bar">
+    <button class="btn btn-green" onclick="saveConfig()">💾 Guardar cambios</button>
+    <span id="save-msg"></span>
+</div>
+
+<!-- ── Modal edición de regalo ──────────────────────────── -->
+<div class="modal-bg" id="modal-bg" onclick="closeModalOnBg(event)">
+    <div class="modal">
+        <h3 id="modal-title">Nuevo regalo</h3>
+
+        <div class="icon-preview" id="modal-icon-preview">🎁</div>
+
+        <div class="param-row">
+            <div class="mfield">
+                <label>Icono (emoji)</label>
+                <input type="text" id="m-icon" maxlength="4" placeholder="🎁" oninput="document.getElementById('modal-icon-preview').textContent=this.value||'🎁'">
+            </div>
+            <div class="mfield">
+                <label>Nombre del regalo</label>
+                <input type="text" id="m-name" placeholder="Rosa">
+            </div>
+        </div>
+
+        <div class="mfield">
+            <label>Palabras clave <small>(separadas por comas — minúsculas, coincidencia parcial)</small></label>
+            <input type="text" id="m-match" placeholder="rose, rosa, tiktok rose">
+        </div>
+
+        <div class="mfield">
+            <label>Texto de alerta en pantalla</label>
+            <input type="text" id="m-label" placeholder="¡la serpiente creció!">
+        </div>
+
+        <div class="mfield">
+            <label>Efecto</label>
+            <select id="m-effect" onchange="onEffectChange()">
+                <option value="grow">🌱 Crecer (agrega segmentos)</option>
+                <option value="shrink">✂️ Encoger (quita segmentos)</option>
+                <option value="rainbow">🌈 Arcoíris (colores animados)</option>
+                <option value="freeze">🧊 Congelar (pausa el juego)</option>
+                <option value="bonus-food">🌟 Manzana dorada</option>
+                <option value="obstacle">💣 Obstáculo (comida lejos + flash)</option>
+                <option value="grow-bonus">🌱🌟 Crecer + manzana dorada</option>
+                <option value="mega">🦁 Mega (crece mucho + arcoíris)</option>
+            </select>
+        </div>
+
+        <div class="param-row">
+            <div class="mfield" id="row-amount">
+                <label>Segmentos <span id="lbl-amount">(a agregar)</span></label>
+                <input type="number" id="m-amount" min="1" max="50" value="3">
+            </div>
+            <div class="mfield" id="row-duration">
+                <label>Duración del efecto (ms)</label>
+                <input type="number" id="m-duration" min="500" max="60000" step="500" value="5000">
+            </div>
+        </div>
+
+        <div class="mfield">
+            <label>Cooldown (ms entre activaciones — 0 = sin límite)</label>
+            <input type="number" id="m-cooldown" min="0" max="120000" step="1000" value="0">
+            <p class="hint">1000 ms = 1 segundo · 15000 ms = 15 segundos</p>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-dark" onclick="closeModal()">Cancelar</button>
+            <button class="btn btn-green" onclick="saveGift()">Guardar regalo</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ── Estado ────────────────────────────────────────────────────────────────
+let config = null;
+let editingId = null;   // null = nuevo regalo
+
+// ── Carga inicial ─────────────────────────────────────────────────────────
+async function loadConfig() {
+    try {
+        const res = await fetch('/api/config');
+        config = await res.json();
+        renderAll();
+    } catch (e) {
+        showMsg('No se pudo conectar al servidor', true);
+    }
+}
+
+// ── Estado TikTok (polling) ───────────────────────────────────────────────
+async function refreshStatus() {
+    try {
+        const res  = await fetch('/api/status');
+        const data = await res.json();
+        const dot  = document.getElementById('status-dot');
+        const txt  = document.getElementById('status-text');
+        if (data.connected) {
+            dot.className = 'on';
+            txt.textContent = `Conectado a @${data.username}`;
+        } else {
+            dot.className = '';
+            txt.textContent = data.error ? `Error: ${data.error}` : 'Desconectado';
+        }
+    } catch (_) {}
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function renderAll() {
+    if (!config) return;
+
+    // Conexión
+    document.getElementById('cfg-username').value = config.username || '';
+
+    // Eventos
+    const ev = config.events || {};
+    setCheck('evt-follower',    ev.follower?.enabled ?? true);
+    setCheck('evt-like-enabled',ev.like?.enabled ?? true);
+    setValue('evt-like-threshold', ev.like?.threshold ?? 50);
+    setCheck('evt-chat-speed',  ev.chat?.speedUp?.enabled ?? true);
+    setCheck('evt-food-emojis', ev.chat?.foodEmojis?.enabled ?? true);
+
+    // Narrador
+    const nar = config.narrator || {};
+    setCheck('nar-enabled', nar.enabled ?? true);
+    const vol = Math.round((nar.volume ?? 0.8) * 100);
+    setValue('nar-volume', vol);
+    document.getElementById('nar-vol-lbl').textContent  = vol + '%';
+    const rate = Math.round((nar.rate ?? 1.1) * 100);
+    setValue('nar-rate', rate);
+    document.getElementById('nar-rate-lbl').textContent = (rate / 100).toFixed(1) + '×';
+    setValue('nar-lang', nar.lang ?? 'es');
+
+    // Regalos
+    renderGifts();
+}
+
+function renderGifts() {
+    const gifts = config.gifts || [];
+    document.getElementById('gifts-count').textContent = `${gifts.length} regalo${gifts.length !== 1 ? 's' : ''}`;
+
+    const EFFECT_LABELS = {
+        'grow':       '🌱 Crecer',
+        'shrink':     '✂️ Encoger',
+        'rainbow':    '🌈 Arcoíris',
+        'freeze':     '🧊 Congelar',
+        'bonus-food': '🌟 Manzana dorada',
+        'obstacle':   '💣 Obstáculo',
+        'grow-bonus': '🌱🌟 Crecer + manzana',
+        'mega':       '🦁 Mega',
+    };
+    const EFFECT_PARAMS = g => {
+        if (['grow','shrink','grow-bonus'].includes(g.effect)) return `±${g.amount} seg`;
+        if (['rainbow','freeze','obstacle'].includes(g.effect)) return `${(g.duration/1000).toFixed(1)}s`;
+        if (g.effect === 'mega') return `+${g.amount} seg · ${(g.duration/1000).toFixed(0)}s 🌈`;
+        return '';
+    };
+
+    const tbody = document.getElementById('gifts-body');
+    tbody.innerHTML = gifts.map(g => `
+        <tr>
+            <td style="font-size:1.4rem;text-align:center">${g.icon}</td>
+            <td><strong>${g.name}</strong><br><span style="font-size:.75rem;color:#888">${g.label}</span></td>
+            <td><span class="match-text" title="${g.match}">${g.match}</span></td>
+            <td>
+                <span class="tag-effect">${EFFECT_LABELS[g.effect] || g.effect}</span><br>
+                <span class="tag-params">${EFFECT_PARAMS(g)}</span>
+            </td>
+            <td class="tag-params">${g.cooldown ? (g.cooldown/1000)+'s' : '—'}</td>
+            <td class="td-actions">
+                <button class="btn btn-dark btn-sm" onclick="openModal(${g.id})">✎ Editar</button>
+                <button class="btn btn-red btn-sm" onclick="deleteGift(${g.id})">🗑</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────
+function openModal(id) {
+    editingId = id;
+    const gift = id !== null ? config.gifts.find(g => g.id === id) : null;
+
+    document.getElementById('modal-title').textContent = gift ? 'Editar regalo' : 'Nuevo regalo';
+
+    const f = {
+        icon:     gift?.icon     || '',
+        name:     gift?.name     || '',
+        match:    gift?.match    || '',
+        label:    gift?.label    || '',
+        effect:   gift?.effect   || 'grow',
+        amount:   gift?.amount   ?? 3,
+        duration: gift?.duration ?? 5000,
+        cooldown: gift?.cooldown ?? 0,
+    };
+
+    document.getElementById('m-icon').value     = f.icon;
+    document.getElementById('m-name').value     = f.name;
+    document.getElementById('m-match').value    = f.match;
+    document.getElementById('m-label').value    = f.label;
+    document.getElementById('m-effect').value   = f.effect;
+    document.getElementById('m-amount').value   = f.amount;
+    document.getElementById('m-duration').value = f.duration;
+    document.getElementById('m-cooldown').value = f.cooldown;
+    document.getElementById('modal-icon-preview').textContent = f.icon || '🎁';
+
+    onEffectChange();
+    document.getElementById('modal-bg').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('modal-bg').classList.remove('open');
+    editingId = null;
+}
+
+function closeModalOnBg(e) {
+    if (e.target === document.getElementById('modal-bg')) closeModal();
+}
+
+function onEffectChange() {
+    const ef  = document.getElementById('m-effect').value;
+    const showAmount   = ['grow','shrink','grow-bonus','mega'].includes(ef);
+    const showDuration = ['rainbow','freeze','obstacle','mega'].includes(ef);
+
+    document.getElementById('row-amount').style.display   = showAmount   ? '' : 'none';
+    document.getElementById('row-duration').style.display = showDuration ? '' : 'none';
+
+    const lbl = document.getElementById('lbl-amount');
+    lbl.textContent = ef === 'shrink' ? '(a quitar)' : '(a agregar)';
+}
+
+function saveGift() {
+    const gift = {
+        id:       editingId ?? (Date.now()),
+        icon:     document.getElementById('m-icon').value.trim()    || '🎁',
+        name:     document.getElementById('m-name').value.trim()    || 'Regalo',
+        match:    document.getElementById('m-match').value.trim()   || '',
+        label:    document.getElementById('m-label').value.trim()   || '',
+        effect:   document.getElementById('m-effect').value,
+        amount:   parseInt(document.getElementById('m-amount').value)   || 0,
+        duration: parseInt(document.getElementById('m-duration').value) || 0,
+        cooldown: parseInt(document.getElementById('m-cooldown').value) || 0,
+    };
+
+    if (!gift.match) { alert('Agregá al menos una palabra clave'); return; }
+
+    if (editingId !== null) {
+        const idx = config.gifts.findIndex(g => g.id === editingId);
+        if (idx !== -1) config.gifts[idx] = gift;
+    } else {
+        config.gifts.push(gift);
+    }
+
+    renderGifts();
+    closeModal();
+}
+
+function deleteGift(id) {
+    if (!confirm('¿Eliminar este regalo?')) return;
+    config.gifts = config.gifts.filter(g => g.id !== id);
+    renderGifts();
+}
+
+// ── Guardar config ────────────────────────────────────────────────────────
+async function saveConfig() {
+    // Leer todos los campos del form al config
+    config.username = document.getElementById('cfg-username').value.trim();
+
+    config.events.follower.enabled        = document.getElementById('evt-follower').checked;
+    config.events.like.enabled            = document.getElementById('evt-like-enabled').checked;
+    config.events.like.threshold          = parseInt(document.getElementById('evt-like-threshold').value) || 50;
+    config.events.chat.speedUp.enabled    = document.getElementById('evt-chat-speed').checked;
+    config.events.chat.speedDown.enabled  = document.getElementById('evt-chat-speed').checked;
+    config.events.chat.foodEmojis.enabled = document.getElementById('evt-food-emojis').checked;
+
+    // Narrador
+    config.narrator = {
+        enabled: document.getElementById('nar-enabled').checked,
+        volume:  parseInt(document.getElementById('nar-volume').value) / 100,
+        rate:    parseInt(document.getElementById('nar-rate').value)   / 100,
+        lang:    document.getElementById('nar-lang').value,
+    };
+
+    try {
+        const res = await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        const data = await res.json();
+        showMsg(data.reconnecting ? '✓ Guardado · Reconectando a TikTok...' : '✓ Guardado correctamente', false);
+        setTimeout(refreshStatus, 3000);
+    } catch (e) {
+        showMsg('Error al guardar: ' + e.message, true);
+    }
+}
+
+async function reconnect() {
+    config.username = document.getElementById('cfg-username').value.trim();
+    await saveConfig();
+}
+
+// ── Probar narrador ───────────────────────────────────────────────────────
+function testNarrator() {
+    const vol  = parseInt(document.getElementById('nar-volume').value) / 100;
+    const rate = parseInt(document.getElementById('nar-rate').value)   / 100;
+    const lang = document.getElementById('nar-lang').value;
+    window.speechSynthesis.cancel();
+    const utt  = new SpeechSynthesisUtterance('Este es el narrador de comentarios de Snake TikTok');
+    utt.lang   = lang;
+    utt.volume = vol;
+    utt.rate   = rate;
+    window.speechSynthesis.speak(utt);
+}
+
+// ── Helpers UI ────────────────────────────────────────────────────────────
+function setCheck(id, val) { document.getElementById(id).checked = !!val; }
+function setValue(id, val) { document.getElementById(id).value   = val; }
+
+function showMsg(msg, isErr) {
+    const el = document.getElementById('save-msg');
+    el.textContent = msg;
+    el.className = isErr ? 'err' : 'ok';
+    setTimeout(() => { el.textContent = ''; el.className = ''; }, 4000);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+loadConfig();
+refreshStatus();
+setInterval(refreshStatus, 5000);
+</script>
+</body>
+</html>

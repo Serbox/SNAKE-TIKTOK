@@ -5,24 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake TikTok AFK</title>
     <link rel="stylesheet" href="assets/css/style.css">
- 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
 
-    <div id="stream-container">
-        <div id="alert-container"></div>
+    <!-- ── Pantalla de configuración ─────────────────────────── -->
+    <div id="config-screen">
+        <div class="config-box">
+            <h1>🐍 Snake AFK</h1>
+            <p class="subtitle">Elegí el tamaño del tablero</p>
 
-        
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div class="grid-options">
+                <button class="grid-btn active" data-size="10">
+                    <span class="grid-label">10 × 10</span>
+                    <span class="grid-desc">Celdas grandes · Fácil de ver en stream</span>
+                </button>
+                <button class="grid-btn" data-size="16">
+                    <span class="grid-label">16 × 16</span>
+                    <span class="grid-desc">Tamaño intermedio</span>
+                </button>
+                <button class="grid-btn" data-size="20">
+                    <span class="grid-label">20 × 20</span>
+                    <span class="grid-desc">Clásico · Más desafiante</span>
+                </button>
+            </div>
+
+            <div class="config-inputs">
+                <div class="config-row">
+                    <label for="win-apples-input">🍎 Manzanas para ganar</label>
+                    <input type="number" id="win-apples-input" value="92" min="1" max="999">
+                </div>
+                <div class="config-row">
+                    <label for="win-goal-input">🏆 Meta de wins <span class="hint">(0 = infinito)</span></label>
+                    <input type="number" id="win-goal-input" value="0" min="0" max="999">
+                </div>
+            </div>
+
+            <button id="start-btn">▶ Iniciar</button>
+        </div>
     </div>
 
-    <!-- Scripts del juego (Estructura modular) -->
+    <!-- ── Juego + panel de regalos ────────────────────────── -->
+    <div id="game-wrapper" style="display:none">
+
+        <!-- Canvas del juego -->
+        <div id="stream-container">
+            <div id="alert-container"></div>
+
+            <div id="score-display">
+                <span class="score-icon">🍎</span>
+                <span id="score-value">0</span>
+                <span id="score-target">/ 92</span>
+                <span class="score-sep">·</span>
+                <span class="score-icon">🏆</span>
+                <span id="wins-value">0</span>
+                <span id="wins-goal"></span>
+            </div>
+
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <!-- Panel lateral de regalos -->
+        <div id="gift-legend">
+            <div class="legend-header">
+                <span>🎁</span>
+                <span>Regalos</span>
+            </div>
+            <div id="legend-items">
+                <p class="legend-empty">Conectá el servidor<br>para ver los regalos</p>
+            </div>
+            <div class="legend-footer">
+                <div class="legend-cmd"><span class="cmd-key">!rapido</span><span class="cmd-desc">⚡ acelera</span></div>
+                <div class="legend-cmd"><span class="cmd-key">!lento</span><span class="cmd-desc">🐢 frena</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts del juego -->
     <script src="src/game/board.js"></script>
-    <script src="src/game/sound.js"></script> <script src="src/game/snake.js"></script>
+    <script src="src/game/sound.js"></script>
+    <script src="src/game/snake.js"></script>
     <script src="src/game/ai.js"></script>
     <script src="src/network/socket.js"></script>
-    
     <script src="src/main.js"></script>
 </body>
 </html>

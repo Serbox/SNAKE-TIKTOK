@@ -1,0 +1,128 @@
+{
+  "username": "s3rboxx",
+  "narrator": {
+    "enabled": true,
+    "volume": 0.8,
+    "rate": 1.1,
+    "lang": "es-ES"
+  },
+  "events": {
+    "follower": {
+      "enabled": true,
+      "icon": "❤️",
+      "message": "¡nuevo seguidor!"
+    },
+    "like": {
+      "enabled": true,
+      "threshold": 50,
+      "icon": "👍",
+      "message": "¡{count} likes!"
+    },
+    "chat": {
+      "speedUp": {
+        "enabled": true,
+        "icon": "⚡",
+        "message": "¡más rápido!"
+      },
+      "speedDown": {
+        "enabled": true,
+        "icon": "🐢",
+        "message": "¡más lento!"
+      },
+      "foodEmojis": {
+        "enabled": true,
+        "cooldown": 20000
+      }
+    }
+  },
+  "gifts": [
+    {
+      "id": 1,
+      "name": "Rosa",
+      "match": "rose, rosa, tiktok rose",
+      "effect": "grow",
+      "amount": 2,
+      "duration": 0,
+      "cooldown": 0,
+      "icon": "🌹",
+      "label": "¡la serpiente creció!"
+    },
+    {
+      "id": 2,
+      "name": "Dona",
+      "match": "donut, dona, doughnut",
+      "effect": "shrink",
+      "amount": 3,
+      "duration": 0,
+      "cooldown": 3000,
+      "icon": "🍩",
+      "label": "¡la serpiente se encogió!"
+    },
+    {
+      "id": 3,
+      "name": "Quiéreme",
+      "match": "quiero, quiereme, heart me, love",
+      "effect": "rainbow",
+      "amount": 0,
+      "duration": 8000,
+      "cooldown": 12000,
+      "icon": "🌈",
+      "label": "¡modo arcoíris!"
+    },
+    {
+      "id": 4,
+      "name": "Hielo",
+      "match": "ice, hielo, freeze, frozen, snow",
+      "effect": "freeze",
+      "amount": 0,
+      "duration": 2500,
+      "cooldown": 10000,
+      "icon": "🧊",
+      "label": "¡serpiente congelada!"
+    },
+    {
+      "id": 5,
+      "name": "Helado",
+      "match": "ice cream, helado, icecream",
+      "effect": "grow-bonus",
+      "amount": 4,
+      "duration": 0,
+      "cooldown": 5000,
+      "icon": "🍦",
+      "label": "¡combo crecer + manzana!"
+    },
+    {
+      "id": 6,
+      "name": "Bomba",
+      "match": "bomb, bomba, explosion, boom",
+      "effect": "obstacle",
+      "amount": 0,
+      "duration": 6000,
+      "cooldown": 15000,
+      "icon": "💣",
+      "label": "¡colocó una bomba!"
+    },
+    {
+      "id": 7,
+      "name": "Tijera",
+      "match": "scissors, tijera, cut",
+      "effect": "shrink",
+      "amount": 6,
+      "duration": 0,
+      "cooldown": 8000,
+      "icon": "✂️",
+      "label": "¡gran sabotaje!"
+    },
+    {
+      "id": 8,
+      "name": "León",
+      "match": "lion, leon, universe, universo",
+      "effect": "mega",
+      "amount": 10,
+      "duration": 12000,
+      "cooldown": 30000,
+      "icon": "🦁",
+      "label": "¡MEGA crecimiento!"
+    }
+  ]
+}
