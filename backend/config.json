@@ -40,12 +40,12 @@
       "id": 1,
       "name": "Rosa",
       "match": "rose, rosa, tiktok rose",
-      "effect": "grow",
-      "amount": 2,
-      "duration": 0,
-      "cooldown": 0,
+      "effect": "blocks",
+      "amount": 4,
+      "duration": 9000,
+      "cooldown": 8000,
       "icon": "🌹",
-      "label": "¡la serpiente creció!"
+      "label": "¡bloqueó el camino!"
     },
     {
       "id": 2,
@@ -123,6 +123,83 @@
       "cooldown": 30000,
       "icon": "🦁",
       "label": "¡MEGA crecimiento!"
+    },
+    {
+      "id": 9,
+      "icon": "📱",
+      "name": "TikTok",
+      "match": "tiktok, tt",
+      "label": "¡serpiente turbo!",
+      "effect": "rainbow",
+      "amount": 0,
+      "duration": 0,
+      "cooldown": 10000
+    },
+    {
+      "id": 10,
+      "icon": "💀",
+      "name": "GG",
+      "match": "gg, good game, gg ez",
+      "label": "¡bloques en el mapa!",
+      "effect": "fire",
+      "amount": 5,
+      "duration": 10000,
+      "cooldown": 8000
+    },
+    {
+      "id": 11,
+      "name": "Capibara",
+      "match": "capybara, capibara, capy",
+      "effect": "freeze-shrink",
+      "amount": 10,
+      "duration": 3000,
+      "cooldown": 15000,
+      "icon": "🦫",
+      "label": "¡congelada y encogida!"
+    },
+    {
+      "id": 12,
+      "name": "Fuego",
+      "match": "fire, fuego, dragon, torch, antorcha",
+      "effect": "fire",
+      "amount": 0,
+      "duration": 10000,
+      "cooldown": 12000,
+      "icon": "🔥",
+      "label": "¡fuego en el mapa!"
+    },
+    {
+      "id": 13,
+      "name": "Resetear",
+      "match": "reset, borrar, erase, restart",
+      "effect": "reset-progress",
+      "amount": 0,
+      "duration": 0,
+      "cooldown": 30000,
+      "icon": "💥",
+      "label": "¡progreso borrado!"
+    },
+    {
+      "id": 14,
+      "name": "-Win",
+      "match": "minus win, menos win, -win",
+      "effect": "minus-wins",
+      "amount": 1,
+      "duration": 0,
+      "cooldown": 20000,
+      "icon": "📉",
+      "label": "¡−1 victoria!"
+    },
+    {
+      "id": 15,
+      "name": "+Win",
+      "match": "bonus win, extra win, +win, mas win",
+      "effect": "plus-wins",
+      "amount": 1,
+      "duration": 0,
+      "cooldown": 20000,
+      "icon": "📈",
+      "label": "¡+1 victoria!"
     }
   ]
 }

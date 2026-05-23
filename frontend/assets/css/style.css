@@ -283,6 +283,71 @@ canvas {
     color: #00ff2a;
 }
 
+/* ── Popup del donador ────────────────────────────────────────── */
+#donor-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.75);
+    z-index: 30;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.30s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.30s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: linear-gradient(145deg, rgba(10,10,15,0.92), rgba(20,20,30,0.88));
+    border: 2px solid rgba(0, 255, 80, 0.25);
+    border-radius: 18px;
+    padding: 18px 28px 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(0, 255, 80, 0.12),
+                0 20px 60px rgba(0, 0, 0, 0.7);
+    min-width: 180px;
+    max-width: 280px;
+}
+
+#donor-popup.donor-visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.donor-icon {
+    font-size: 2.8rem;
+    line-height: 1.1;
+    filter: drop-shadow(0 0 12px rgba(255,200,0,0.7));
+    animation: none;
+}
+
+#donor-popup.donor-visible .donor-icon {
+    animation: donorIconPulse 0.6s ease-out;
+}
+
+@keyframes donorIconPulse {
+    0%   { transform: scale(0.5); }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1);   }
+}
+
+.donor-name {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 24px rgba(0, 255, 100, 0.7),
+                 0 0 8px rgba(0, 255, 100, 0.4);
+    margin-top: 6px;
+    letter-spacing: -0.5px;
+    word-break: break-word;
+    line-height: 1.2;
+}
+
+.donor-label {
+    font-size: 0.88rem;
+    color: #00ff2a;
+    margin-top: 5px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
 /* ── Panel lateral de regalos ─────────────────────────────────── */
 #gift-legend {
     background-color: #16161a;
@@ -294,7 +359,7 @@ canvas {
     width: 190px;
     flex-shrink: 0;
     overflow: hidden;
-    align-self: stretch;   /* misma altura que el juego */
+    align-self: stretch;
 }
 
 .legend-header {
@@ -402,4 +467,38 @@ canvas {
 .cmd-desc {
     color: #888;
     font-size: 0.73rem;
+}
+
+/* ── Narrador (footer del panel) ──────────────────────────── */
+.legend-nar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    padding-top: 5px;
+    border-top: 1px solid #252529;
+}
+
+#nar-indicator {
+    font-size: 0.85rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    line-height: 1;
+}
+
+.nar-test-btn {
+    background: #252529;
+    border: 1px solid #3a3a3e;
+    border-radius: 5px;
+    color: #aaa;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.nar-test-btn:hover {
+    background: #333;
+    color: #fff;
 }

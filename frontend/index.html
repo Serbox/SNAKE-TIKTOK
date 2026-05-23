@@ -50,7 +50,15 @@
 
         <!-- Canvas del juego -->
         <div id="stream-container">
+            <!-- Alertas de TikTok (arriba del canvas) -->
             <div id="alert-container"></div>
+
+            <!-- Popup del donador (centrado sobre el canvas) -->
+            <div id="donor-popup">
+                <div class="donor-icon">🎁</div>
+                <div class="donor-name">Donador</div>
+                <div class="donor-label"></div>
+            </div>
 
             <div id="score-display">
                 <span class="score-icon">🍎</span>
@@ -77,6 +85,10 @@
             <div class="legend-footer">
                 <div class="legend-cmd"><span class="cmd-key">!rapido</span><span class="cmd-desc">⚡ acelera</span></div>
                 <div class="legend-cmd"><span class="cmd-key">!lento</span><span class="cmd-desc">🐢 frena</span></div>
+                <div class="legend-nar">
+                    <span id="nar-indicator">🔊</span>
+                    <button class="nar-test-btn" onclick="window.testNarrador()">Test voz</button>
+                </div>
             </div>
         </div>
 

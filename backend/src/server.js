@@ -81,7 +81,7 @@ function drainQueue() {
     setTimeout(drainQueue, QUEUE_DELAY);
 }
 
-// Cooldown solo para efectos únicos (freeze, obstacle, mega)
+// Cooldown para efectos únicos (no se pueden spamear)
 const _cd = new Map();
 function inCooldown(key, ms) {
     if (!ms) return false;
@@ -97,9 +97,14 @@ function sendAlert(payload) {
     io.emit('alert', payload);
 }
 
-function applyGiftEffect(gift, user) {
+function applyGiftEffect(gift, user, displayName) {
+    const dn = displayName || user;
+
     // Efectos únicos: si hay cooldown activo, ignorar
-    const uniqueEffects = ['freeze', 'obstacle', 'mega'];
+    const uniqueEffects = [
+        'freeze', 'obstacle', 'mega', 'blocks', 'freeze-shrink',
+        'fire', 'reset-progress', 'minus-wins', 'plus-wins', 'speed-up'
+    ];
     if (uniqueEffects.includes(gift.effect)) {
         if (inCooldown(`uniq:${gift.id}`, gift.cooldown || 15_000)) return;
     }
@@ -107,30 +112,52 @@ function applyGiftEffect(gift, user) {
     enqueue(() => {
         switch (gift.effect) {
             case 'grow':
-                io.emit('snake-grow', { user, amount: gift.amount });
+                io.emit('snake-grow', { user, displayName: dn, amount: gift.amount });
                 break;
             case 'shrink':
-                io.emit('snake-shrink', { user, amount: gift.amount });
+                io.emit('snake-shrink', { user, displayName: dn, amount: gift.amount });
                 break;
             case 'rainbow':
-                io.emit('snake-rainbow', { user, duration: gift.duration });
+                io.emit('snake-rainbow', { user, displayName: dn, duration: gift.duration });
                 break;
             case 'freeze':
-                io.emit('snake-freeze', { user, duration: gift.duration });
+                io.emit('snake-freeze', { user, displayName: dn, duration: gift.duration });
                 break;
             case 'bonus-food':
-                io.emit('bonus-food', { user });
+                io.emit('bonus-food', { user, displayName: dn });
                 break;
             case 'obstacle':
-                io.emit('obstacle', { user, duration: gift.duration });
+                io.emit('obstacle', { user, displayName: dn, duration: gift.duration });
                 break;
             case 'grow-bonus':
-                io.emit('snake-grow', { user, amount: gift.amount });
-                io.emit('bonus-food', { user });
+                io.emit('snake-grow', { user, displayName: dn, amount: gift.amount });
+                io.emit('bonus-food', { user, displayName: dn });
                 break;
             case 'mega':
-                io.emit('snake-grow',    { user, amount: gift.amount });
-                io.emit('snake-rainbow', { user, duration: gift.duration });
+                io.emit('snake-grow',    { user, displayName: dn, amount: gift.amount });
+                io.emit('snake-rainbow', { user, displayName: dn, duration: gift.duration });
+                break;
+            case 'speed-up':
+                io.emit('speed-change', { delta: -25 });
+                break;
+            case 'blocks':
+                io.emit('snake-blocks', { user, displayName: dn, amount: gift.amount, duration: gift.duration });
+                break;
+            case 'freeze-shrink':
+                io.emit('snake-freeze',  { user, displayName: dn, duration: gift.duration });
+                io.emit('snake-shrink',  { user, displayName: dn, amount: gift.amount });
+                break;
+            case 'fire':
+                io.emit('snake-fire', { user, displayName: dn, duration: gift.duration });
+                break;
+            case 'reset-progress':
+                io.emit('snake-reset-progress', { user, displayName: dn });
+                break;
+            case 'minus-wins':
+                io.emit('snake-minus-wins', { user, displayName: dn, amount: gift.amount });
+                break;
+            case 'plus-wins':
+                io.emit('snake-plus-wins', { user, displayName: dn, amount: gift.amount });
                 break;
         }
 
@@ -232,10 +259,11 @@ function connectTikTok(username) {
     tiktokClient.on('gift', data => {
         if (data.giftType === 1 && data.repeatEnd === 0) return;
 
-        const rawName  = data.giftName || 'regalo';
-        const name     = rawName.toLowerCase();
-        const diamonds = data.diamondCount ?? 0;
-        const user     = data.uniqueId;
+        const rawName     = data.giftName || 'regalo';
+        const name        = rawName.toLowerCase();
+        const diamonds    = data.diamondCount ?? 0;
+        const user        = data.uniqueId;
+        const displayName = data.nickname || data.uniqueId;
 
         // Alerta genérica para TODOS los regalos
         sendAlert({ type: 'gift', icon: '🎁', user, message: `envió ${rawName}${diamonds ? ` (${diamonds} 💎)` : ''}` });
@@ -247,7 +275,13 @@ function connectTikTok(username) {
         );
 
         if (matched) {
-            applyGiftEffect(matched, user);
+            // Popup del donador con su APODO (no el username)
+            io.emit('donor-popup', {
+                displayName,
+                icon:  matched.icon,
+                label: matched.label
+            });
+            applyGiftEffect(matched, user, displayName);
         }
     });
 

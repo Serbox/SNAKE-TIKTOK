@@ -57,7 +57,15 @@ thead th{text-align:left;padding:8px 10px;color:#888;border-bottom:1px solid #25
 tbody tr{border-bottom:1px solid #1a1a1e;transition:background .1s}
 tbody tr:hover{background:#1c1c22}
 tbody td{padding:9px 10px;vertical-align:middle}
-.tag-effect{display:inline-block;background:#1e2e22;color:#00c845;border-radius:5px;padding:2px 8px;font-size:.78rem;white-space:nowrap}
+.tag-effect{display:inline-block;background:#1e2225;color:#aaa;border-radius:5px;padding:2px 8px;font-size:.78rem;white-space:nowrap}
+.tag-grow{background:#1e2e22;color:#00c845}
+.tag-shrink{background:#2e1e1e;color:#e05555}
+.tag-rainbow{background:#221e2e;color:#dd88ff}
+.tag-freeze{background:#1a222e;color:#66aaff}
+.tag-fire{background:#2e1e10;color:#ff6622}
+.tag-blocks{background:#2e1010;color:#cc4444}
+.tag-wins{background:#222e22;color:#44ff88}
+.tag-danger{background:#2e1010;color:#ff3333}
 .tag-params{color:#aaa;font-size:.78rem}
 .match-text{color:#888;font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .td-actions{white-space:nowrap;text-align:right}
@@ -245,14 +253,29 @@ tbody td{padding:9px 10px;vertical-align:middle}
         <div class="mfield">
             <label>Efecto</label>
             <select id="m-effect" onchange="onEffectChange()">
+                <optgroup label="── Serpiente ──────────────">
                 <option value="grow">🌱 Crecer (agrega segmentos)</option>
                 <option value="shrink">✂️ Encoger (quita segmentos)</option>
-                <option value="rainbow">🌈 Arcoíris (colores animados)</option>
-                <option value="freeze">🧊 Congelar (pausa el juego)</option>
-                <option value="bonus-food">🌟 Manzana dorada</option>
-                <option value="obstacle">💣 Obstáculo (comida lejos + flash)</option>
                 <option value="grow-bonus">🌱🌟 Crecer + manzana dorada</option>
                 <option value="mega">🦁 Mega (crece mucho + arcoíris)</option>
+                <option value="reset-progress">💥 Resetear progreso (vuelve al inicio)</option>
+                </optgroup>
+                <optgroup label="── Estado ──────────────────">
+                <option value="rainbow">🌈 Arcoíris (colores animados)</option>
+                <option value="freeze">🧊 Congelar (pausa el juego)</option>
+                <option value="freeze-shrink">🦫 Congelar + encoger</option>
+                <option value="speed-up">📱 Turbo (acelera la serpiente)</option>
+                </optgroup>
+                <optgroup label="── Mapa ────────────────────">
+                <option value="bonus-food">🌟 Manzana dorada</option>
+                <option value="obstacle">💣 Obstáculo (comida lejos + flash)</option>
+                <option value="blocks">🧱 Bloques en el mapa</option>
+                <option value="fire">🔥 Fuego (partículas de fuego)</option>
+                </optgroup>
+                <optgroup label="── Victorias ───────────────">
+                <option value="plus-wins">📈 Sumar victoria</option>
+                <option value="minus-wins">📉 Quitar victoria</option>
+                </optgroup>
             </select>
         </div>
 
@@ -348,20 +371,50 @@ function renderGifts() {
     document.getElementById('gifts-count').textContent = `${gifts.length} regalo${gifts.length !== 1 ? 's' : ''}`;
 
     const EFFECT_LABELS = {
-        'grow':       '🌱 Crecer',
-        'shrink':     '✂️ Encoger',
-        'rainbow':    '🌈 Arcoíris',
-        'freeze':     '🧊 Congelar',
-        'bonus-food': '🌟 Manzana dorada',
-        'obstacle':   '💣 Obstáculo',
-        'grow-bonus': '🌱🌟 Crecer + manzana',
-        'mega':       '🦁 Mega',
+        'grow':           '🌱 Crecer',
+        'shrink':         '✂️ Encoger',
+        'rainbow':        '🌈 Arcoíris',
+        'freeze':         '🧊 Congelar',
+        'bonus-food':     '🌟 Manzana dorada',
+        'obstacle':       '💣 Obstáculo',
+        'grow-bonus':     '🌱🌟 Crecer + manzana',
+        'mega':           '🦁 Mega',
+        'speed-up':       '📱 Turbo',
+        'blocks':         '🧱 Bloques',
+        'freeze-shrink':  '🦫 Congelar + encoger',
+        'fire':           '🔥 Fuego',
+        'reset-progress': '💥 Resetear',
+        'minus-wins':     '📉 Quitar victoria',
+        'plus-wins':      '📈 Sumar victoria',
     };
     const EFFECT_PARAMS = g => {
-        if (['grow','shrink','grow-bonus'].includes(g.effect)) return `±${g.amount} seg`;
-        if (['rainbow','freeze','obstacle'].includes(g.effect)) return `${(g.duration/1000).toFixed(1)}s`;
-        if (g.effect === 'mega') return `+${g.amount} seg · ${(g.duration/1000).toFixed(0)}s 🌈`;
-        return '';
+        const dur = s => `${(s/1000).toFixed(1)}s`;
+        switch (g.effect) {
+            case 'grow':           return `+${g.amount} seg`;
+            case 'shrink':         return `−${g.amount} seg`;
+            case 'grow-bonus':     return `+${g.amount} seg + 🍎`;
+            case 'mega':           return `+${g.amount} seg · ${dur(g.duration)} 🌈`;
+            case 'rainbow':        return dur(g.duration);
+            case 'freeze':         return dur(g.duration);
+            case 'obstacle':       return dur(g.duration);
+            case 'blocks':         return `${g.amount} bloques · ${dur(g.duration)}`;
+            case 'freeze-shrink':  return `${dur(g.duration)} · −${g.amount} seg`;
+            case 'fire':           return dur(g.duration);
+            case 'minus-wins':     return `−${g.amount} win`;
+            case 'plus-wins':      return `+${g.amount} win`;
+            default:               return '';
+        }
+    };
+
+    const EFFECT_CSS = {
+        'grow': 'tag-grow', 'grow-bonus': 'tag-grow', 'mega': 'tag-grow',
+        'shrink': 'tag-shrink', 'freeze-shrink': 'tag-shrink',
+        'rainbow': 'tag-rainbow',
+        'freeze': 'tag-freeze',
+        'fire': 'tag-fire',
+        'blocks': 'tag-blocks', 'obstacle': 'tag-blocks',
+        'plus-wins': 'tag-wins',
+        'minus-wins': 'tag-danger', 'reset-progress': 'tag-danger',
     };
 
     const tbody = document.getElementById('gifts-body');
@@ -371,7 +424,7 @@ function renderGifts() {
             <td><strong>${g.name}</strong><br><span style="font-size:.75rem;color:#888">${g.label}</span></td>
             <td><span class="match-text" title="${g.match}">${g.match}</span></td>
             <td>
-                <span class="tag-effect">${EFFECT_LABELS[g.effect] || g.effect}</span><br>
+                <span class="tag-effect ${EFFECT_CSS[g.effect]||''}">${EFFECT_LABELS[g.effect] || g.effect}</span><br>
                 <span class="tag-params">${EFFECT_PARAMS(g)}</span>
             </td>
             <td class="tag-params">${g.cooldown ? (g.cooldown/1000)+'s' : '—'}</td>
@@ -426,14 +479,32 @@ function closeModalOnBg(e) {
 
 function onEffectChange() {
     const ef  = document.getElementById('m-effect').value;
-    const showAmount   = ['grow','shrink','grow-bonus','mega'].includes(ef);
-    const showDuration = ['rainbow','freeze','obstacle','mega'].includes(ef);
+
+    // Efectos que necesitan campo "cantidad de segmentos"
+    const showAmount = [
+        'grow', 'shrink', 'grow-bonus', 'mega',
+        'freeze-shrink', 'plus-wins', 'minus-wins', 'blocks'
+    ].includes(ef);
+
+    // Efectos que necesitan campo "duración"
+    const showDuration = [
+        'rainbow', 'freeze', 'obstacle', 'mega',
+        'freeze-shrink', 'fire', 'blocks'
+    ].includes(ef);
 
     document.getElementById('row-amount').style.display   = showAmount   ? '' : 'none';
     document.getElementById('row-duration').style.display = showDuration ? '' : 'none';
 
     const lbl = document.getElementById('lbl-amount');
-    lbl.textContent = ef === 'shrink' ? '(a quitar)' : '(a agregar)';
+    if (['shrink', 'freeze-shrink'].includes(ef)) {
+        lbl.textContent = '(segmentos a quitar)';
+    } else if (['plus-wins', 'minus-wins'].includes(ef)) {
+        lbl.textContent = '(victorias)';
+    } else if (ef === 'blocks') {
+        lbl.textContent = '(bloques a colocar)';
+    } else {
+        lbl.textContent = '(segmentos a agregar)';
+    }
 }
 
 function saveGift() {
